@@ -1,20 +1,32 @@
-# LearningPhoenixLiveviewBrightnessGauge
+# Learning Phoenix Liveview
 
-To start your Phoenix server:
+## Add page
 
-  * Install dependencies with `mix deps.get`
-  * Create and migrate your database with `mix ecto.setup`
-  * Install Node.js dependencies with `npm install` inside the `assets` directory
-  * Start Phoenix endpoint with `mix phx.server`
+Add live route in `lib/learning_phoenix_liveview_brightness_gauge_web/router.ex`
 
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
+-> live_macro "path", LiveViewModule
+ex: `live "/light", LightLive`
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+```elixir
+defmodule LearningPhoenixLiveviewBrightnessGaugeWeb.Router do
+  use LearningPhoenixLiveviewBrightnessGaugeWeb, :router
 
-## Learn more
+  ...
 
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+  scope "/", LearningPhoenixLiveviewBrightnessGaugeWeb do
+    pipe_through :browser
+
+    live "/", PageLive, :index
+    # Add live view route:
+    live "/light", LightLive
+  end
+  ...
+```
+
+Define the module `light_live.ex` in `lib/learning_phoenix_liveview_brightness_gauge_web/live`
+
+```elixir
+defmodule LearningPhoenixLiveviewBrightnessGaugeWeb.LightLive do
+  use LearningPhoenixLiveviewBrightnessGaugeWeb, :live_view
+end
+```
