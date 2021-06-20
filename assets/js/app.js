@@ -18,7 +18,48 @@ import topbar from "topbar"
 import {LiveSocket} from "phoenix_live_view"
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
-let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}})
+
+window.liveSocket = liveSocket
+let Hooks = {};
+Hooks.buttonUpEvent = {
+  mounted()
+  {
+    this.handleEvent("buttonUpEvent", (payload) => {
+      document.getElementById('light-on').classList.remove('js-button-visible');
+      applyOpacityBrightness(payload.pourcent);
+    })
+  },
+}
+Hooks.buttonDownEvent = {
+  mounted()
+  {
+    this.handleEvent("buttonDownEvent", (payload) => {
+      if (payload.pourcent <= 0)
+        document.getElementById('light-on').classList.add('js-button-visible');
+      
+      applyOpacityBrightness(payload.pourcent);
+    })
+  },
+}
+Hooks.buttonOnEvent = {
+  mounted()
+  {
+    this.handleEvent("buttonOnEvent", () => {
+      document.getElementById('light-on').classList.remove('js-button-visible');
+      applyOpacityBrightness(100);
+    })
+  },
+}
+Hooks.buttonOffEvent = {
+  mounted()
+  {
+    this.handleEvent("buttonOffEvent", () => {
+      document.getElementById('light-on').classList.add('js-button-visible');
+      applyOpacityBrightness(0);
+    })
+  },
+}
+let liveSocket = new LiveSocket("/live", Socket, {params: {_csrf_token: csrfToken}, hooks: Hooks})
 
 // Show progress bar on live navigation and form submits
 topbar.config({barColors: {0: "#29d"}, shadowColor: "rgba(0, 0, 0, .3)"})
@@ -32,5 +73,8 @@ liveSocket.connect()
 // >> liveSocket.enableDebug()
 // >> liveSocket.enableLatencySim(1000)  // enabled for duration of browser session
 // >> liveSocket.disableLatencySim()
-window.liveSocket = liveSocket
 
+function applyOpacityBrightness(pourcent) 
+{
+  document.getElementById('jsOverlay').style.background = "rgba(0, 0, 0, " + (100 -  pourcent) + "%)";
+}
